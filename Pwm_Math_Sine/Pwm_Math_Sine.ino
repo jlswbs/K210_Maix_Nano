@@ -10,17 +10,16 @@
 
 #define SAMPLE_RATE 44100
 #define TIMER_RATE  1000000000/SAMPLE_RATE
-#define PWM_RATE    1000000
+#define PWM_RATE    10*SAMPLE_RATE
 #define AUDIO_PIN_L 6
 #define AUDIO_PIN_R 8
 
-  uint8_t out_l, out_r;
   float phase = 0.0f;
 
 
 int audio_callback(void *ctx){
      
-  double duty_l =  0.5f + (0.49f * sinf(phase));
+  double duty_l =  0.5f + (0.5f * sinf(phase));
   double duty_r =  duty_l;
 
   pwm_set_frequency(PWM_DEVICE_1, PWM_CHANNEL_0, PWM_RATE, duty_l);

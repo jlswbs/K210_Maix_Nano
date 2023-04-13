@@ -10,11 +10,9 @@
 
 #define SAMPLE_RATE 44100
 #define TIMER_RATE  1000000000/SAMPLE_RATE
-#define PWM_RATE    1000000
+#define PWM_RATE    10*SAMPLE_RATE
 #define AUDIO_PIN_L 6
 #define AUDIO_PIN_R 8
-
-  uint8_t out_l, out_r;
 
   long A=0x7e66;
   long y[3]={0,0x1209,0};
