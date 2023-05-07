@@ -1,4 +1,4 @@
-// Stereo Audio PWM - Amari oscillator example //
+// Stereo Audio PWM - Coupled oscillator example //
 
 #include <stdio.h>
 #include <syslog.h>
@@ -14,33 +14,24 @@
 #define AUDIO_PIN_L 6
 #define AUDIO_PIN_R 8
 
-  float u = 0.0f;
-  float s_u = 0.0f;
-  float h_u = 0.0f;
-  float c_uu = 1.5f;
-  float d_u = 0.0f;
-  float v = 0.0f;
-  float s_v = 0.0f;
-  float h_v = -1.0f;
-  float c_vv = 0.0f;
-  float d_v = 0.0f;
-  float c_uv = -1.5f;
-  float c_vu = 1.5f;
-  float bt = 20.0f;
-  float dt = 0.01f;
-  float c_n = 0.1f;
-
-float sigmoid(float x, float bt){ return 1.0f/(1.0f + expf(-x*bt)); }
+  float x = 0.1f;
+  float y = 0.1f;
+  float dt = 0.05f;
+  float a = 3.7f;
 
 int audio_callback(void *ctx){
 
-  d_u = dt * (- u + s_u + h_u + c_uu * sigmoid(u, bt) + c_uv * sigmoid(v, bt) + c_n);
-  u = u + d_u;
-  d_v = dt * (- v + s_v + h_v + c_vv * sigmoid(v, bt) + c_vu * sigmoid(u, bt));
-  v = v + d_v;
+  float nx = x;
+  float ny = y;
+        
+  x = nx + dt * (a * ny * (ny - 1.0f));
+  y = ny + dt * nx;
+ 
+  if (x > 1.0f) x = 0.1f;
+  if (x < -1.0f) x = -0.1f;
      
-  double duty_l = 0.3f + (0.9f * u);
-  double duty_r = 0.5f + (0.9f * v);
+  double duty_l = 0.5f + (0.5f * x);
+  double duty_r = 0.3f + (0.9f * y);
 
   pwm_set_frequency(PWM_DEVICE_1, PWM_CHANNEL_0, PWM_RATE, duty_l);
   pwm_set_frequency(PWM_DEVICE_1, PWM_CHANNEL_1, PWM_RATE, duty_r);
